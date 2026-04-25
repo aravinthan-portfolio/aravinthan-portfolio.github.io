@@ -51,15 +51,50 @@ h2 {
     letter-spacing: 1px;
 }
 
-/* --- NEW: Add transition for ALL Section Title glows --- */
+/* --- PREMIUM SOLID TITLES WITH ANIMATED UNDERLINE --- */
 .content-section h2 {
-    transition: text-shadow 0.3s ease-in-out; 
+    color: var(--color-white);
+    background: none;
+    -webkit-text-fill-color: initial;
+    
+    /* Shrinks the hover zone so the underline matches the text length perfectly */
+    position: relative; 
+    width: fit-content;
+    margin-inline: auto; 
+    
+    /* Faint base glow */
+    text-shadow: 0 0 10px rgba(0, 170, 255, 0.2); 
+    transition: text-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-/* --- NEW: Static Glow on Hover for ALL Section Titles --- */
+/* 1. The Text Hover Effect */
 .content-section h2:hover {
-    /* Apply a constant, steady glow - Adjust 15px for size */
-    text-shadow: 0 0 15px var(--color-accent); 
+    text-shadow: 0 0 15px var(--color-accent);
+    transform: scale(1.02);
+}
+
+/* 2. The Premium Underline Setup (Hidden by default) */
+.content-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; /* Spacing below the text */
+    left: 0;
+    width: 100%;
+    height: 2px; /* Thin, sharp tech line */
+    background: var(--color-accent);
+    box-shadow: 0 0 10px var(--color-accent); /* Gives the line a neon glow */
+    
+    /* Animation Physics: Starts at 0 width from the center */
+    transform: scaleX(0);
+    transform-origin: center; 
+    
+    /* A high-end "bouncy" easing curve for the expansion */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 3. The Underline Hover Effect (Expands to full width) */
+.content-section h2:hover::after {
+    transform: scaleX(1);
 }
 
 p {
@@ -903,20 +938,6 @@ nav .container {
     perspective: 1000px;
 }
 
-/* ANIMATION: Only motion, no extra glow or color changes */
-#achievements h3:hover i.fa-laptop-code {
-    animation: laptopTilt 1.5s ease-in-out infinite;
-}
-
-@keyframes laptopTilt {
-    0%, 100% { 
-        transform: rotateX(0deg) translateY(0); 
-    }
-    50% { 
-        /* The laptop "tilts" back 20 degrees and lifts slightly */
-        transform: rotateX(20deg) translateY(-5px); 
-    }
-}
 
 /* =========================================
    OPTION 7 - GLASS GLOW CARDS (Interactive)
@@ -1140,16 +1161,19 @@ nav .container {
 .reward-grid {
     display: grid;
     grid-template-columns: repeat(3, 380px);
-    gap: 1rem; 
+    
+    /* THE FIX: Increased row spacing while keeping column spacing (1.5rem) */
+    gap: 2rem 1.5rem; 
+    
     margin-top: 2rem;
     justify-content: center;
 }
 
 /* Base Card Styling - ORIGINAL BACKGROUND + GLOSSY BORDER ONLY */
 .reward-card {
-    background: rgba(26, 26, 46, 0.4); /* Restored original background */
+    background: rgba(26, 26, 46, 0.4); 
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 170, 255, 0.2); /* The new subtle blue border */
+    border: 1px solid rgba(0, 170, 255, 0.2); 
     border-radius: 20px;
     padding: 1.2rem 2rem; 
     display: flex;
@@ -1158,6 +1182,69 @@ nav .container {
     width: 380px; 
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
     position: relative;
+    
+    /* THE FIX: Traps the glowing orb inside the rounded corners */
+    overflow: hidden; 
+}
+
+/* --- NEW: Reward Card Ambient Glow Orbs (Dual Underglow) --- */
+/* 1. The original orb on the bottom-right */
+.reward-card .glow-orb {
+    background: var(--color-accent); 
+    z-index: 0; 
+    left: auto; 
+    right: -40px; 
+    bottom: -40px;
+    transform: none; 
+    
+    /* THE FIX: Lowered base opacity from 0.15 to 0.08 */
+    filter: blur(40px);
+    opacity: 0.08; 
+}
+
+/* 2. The cloned orb on the bottom-left */
+.reward-card::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 130px;
+    height: 130px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    
+    /* THE FIX: Lowered base opacity from 0.15 to 0.08 */
+    filter: blur(40px);
+    opacity: 0.08; 
+    
+    z-index: 0;
+    transition: all 0.3s ease-out;
+    pointer-events: none; 
+}
+
+/* 3. The Hover Effect */
+.reward-card:hover .glow-orb,
+.reward-card:hover::before {
+    /* THE FIX: Lowered hover opacity from 0.4 to 0.2 */
+    opacity: 0.2; 
+    
+    /* THE FIX: Reduced the hover expansion from 1.2 to 1.1 */
+    transform: scale(1.1) !important; 
+    transition: all 0.3s ease-out !important;
+}
+
+/* Make sure the text and slider stay ABOVE the glowing orbs */
+.reward-card .reward-slider,
+.reward-card .reward-info {
+    position: relative;
+    z-index: 2;
+}
+
+/* --- NEW: Make the text container fill the card --- */
+.reward-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
 }
 
 /* --- THE CLASSIC SNAPPY HOVER LIFT (PREMIUM GLOW) --- */
@@ -1233,18 +1320,202 @@ nav .container {
     box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
 }
 
-/* --- TEXT STYLES --- */
-.reward-info h3 {
-    font-size: 1.15rem;
-    color: var(--color-white);
-    margin-bottom: 0.4rem;
+/* --- UPDATED: Reward Card Text Layout & Colors --- */
+.reward-info .award-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Spacing between the two lines */
+    margin-bottom: 0.8rem;
+    align-items: center; /* Centers the text */
+    text-align: center;
 }
 
+/* 1. The "Recognized with:" Text */
+.reward-info .recognized-text {
+    font-size: 0.75rem;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5); /* Soft, faded grey */
+    font-weight: 600;
+}
+
+
+/* 2. The Actual Award Name (With Animated Gradient) */
+.reward-info .award-name {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+    
+    /* COPY YOUR CHOSEN GRADIENT HERE (Currently set to Option 1: Gold) */
+    background: linear-gradient(90deg, #F3E5AB, #D4AF37, #F3E5AB);
+    
+    /* This makes the gradient large enough to slide around */
+    background-size: 200% auto;
+    
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* The Animation Trigger */
+    animation: textShimmer 3s linear infinite;
+    
+    /* COPY YOUR CHOSEN GLOW COLOR HERE (Currently set to Option 1: Gold) */
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+}
+
+/* --- THE SHIMMER ANIMATION --- */
+@keyframes textShimmer {
+    to {
+        background-position: 200% center;
+    }
+}
+
+/* Fallback: Hide the old paragraph text just in case */
 .reward-info p {
-    font-size: 0.88rem;
-    color: #b0b0b0;
-    line-height: 1.5;
-    margin-bottom: 0;
+    display: none; 
+}
+
+/* --- THE "LUMINOUS FIBER-OPTIC" PREMIUM BUTTON --- */
+
+/* 1. The Idle (Non-Hover) State */
+.reward-info .read-more-btn {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    
+    /* Brightened text and visible blue tint so the user knows it's a button */
+    color: #ffffff; /* Change this to pure white */
+    font-weight: 600; /* Add this to make the text slightly bolder */
+    background: rgba(0, 170, 255, 0.05); 
+    border: 1px solid rgba(0, 170, 255, 0.3); 
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.1);
+
+    padding: 0.6rem 1.6rem;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: auto auto 0 auto !important;
+    position: relative;
+    
+    /* Bouncy, expensive-feeling physics curve for the lift */
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Arrow icon inside the button */
+.read-more-btn i {
+    color: #00f2fe; /* Bright neon cyan */
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6); /* The base glow */
+    margin-left: 5px; /* Keeps a nice gap between text and arrow */
+    transition: all 0.3s ease;
+}
+
+/* Make the glow brighter when you hover over the button */
+.read-more-btn:hover i {
+    text-shadow: 0 0 15px rgba(0, 242, 254, 1);
+    transform: translateX(4px); /* Optional: Slides the arrow to the right slightly */
+}
+
+/* 2. The Idle Arrow State */
+.reward-info .read-more-btn i {
+    font-size: 0.75rem;
+    color: var(--color-accent); /* Tech-blue arrow so it pops out instantly */
+    opacity: 0.9;
+    transition: all 0.4s ease;
+}
+
+/* 3. THE PREMIUM HOVER LIGHTING */
+.reward-card:hover .read-more-btn {
+    /* Text snaps to crisp white */
+    color: #ffffff !important; 
+    background: rgba(0, 170, 255, 0.08); 
+    border-color: rgba(0, 170, 255, 0.6); 
+
+    /* THE MAGIC: 3D inner glow and outer drop shadow simultaneously */
+    box-shadow: 
+        inset 0 0 20px rgba(0, 170, 255, 0.4),  /* Deep inner blue glow */
+        inset 0 0 5px rgba(255, 255, 255, 0.4), /* Sharp white inner rim light */
+        0 10px 20px rgba(0, 170, 255, 0.15);    /* Soft outer shadow on the page */
+
+    /* Satisfying physical lift toward the user */
+    transform: translateY(-5px); 
+}
+
+/* 4. The Hover Arrow State */
+.reward-card:hover .read-more-btn i {
+    transform: translateX(5px); /* Arrow shoots forward */
+    color: var(--color-accent);
+    opacity: 1;
+}
+
+/* --- NEW: Rewards Modal Styles --- */
+.reward-modal-slider {
+    position: relative;
+    width: 100%;
+    height: 350px; /* Fixed height so the modal doesn't jump around */
+    background: rgba(0, 0, 0, 0.4); /* Dark backdrop for the photos */
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reward-modal-slider img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* PERFECT FIT: shows the whole image without cropping */
+    border-radius: 8px;
+}
+
+/* Reposition the navigation buttons inside the modal */
+.reward-modal-slider .slider-btn {
+    background: rgba(0, 0, 0, 0.6) !important; /* Slightly darker to see on images */
+}
+.reward-modal-slider .slider-btn.prev { left: 10px; }
+.reward-modal-slider .slider-btn.next { right: 10px; }
+
+#reward-modal-title {
+    font-size: 1.6rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    font-family: var(--font-heading);
+}
+
+#reward-modal-story p {
+    font-size: 1rem;
+    color: var(--color-light-text);
+    line-height: 1.6;
+}
+
+/* --- Premium Glossy Effect for Rewards Modal --- */
+.reward-glass-modal {
+    /* 1. The Glossy Transparent Effect from your Reward Cards */
+    background: rgba(26, 26, 46, 0.4) !important; 
+    border: 1px solid rgba(0, 170, 255, 0.2) !important;
+    border-radius: 20px !important;
+    
+    /* 2. The Heavy Blur from your Academics Modal */
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    
+    /* 3. A premium inner/outer shadow to make the glass pop */
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05), 0 10px 40px rgba(0, 170, 255, 0.2) !important;
+}
+
+/* Make the close button slightly brighter so it's visible on the dark glass */
+.reward-glass-modal .modal-close {
+    color: var(--color-white);
+    opacity: 0.8;
+}
+.reward-glass-modal .modal-close:hover {
+    color: var(--color-accent);
+    opacity: 1;
 }
 
 
@@ -1723,7 +1994,7 @@ h2 i, h3 i {
     font-size: 0.85em; /* Makes the icon slightly smaller than the text */
 }
 
-/* --- SECTION TITLE ICON HOVERS (FIXED) --- */
+/* --- SECTION TITLE ICON HOVERS (CONSOLIDATED) --- */
 
 /* 1. Base setup: Ensure all title icons are ready to animate */
 h3 i {
@@ -1732,10 +2003,9 @@ h3 i {
 }
 
 /* 2. Academics: The "Toss & Tilt" */
-/* Triggers when you hover over the H3 containing the graduation cap */
 h3:hover i.fa-graduation-cap {
     animation: capToss 1.2s ease-in-out infinite;
-    color: #00aaff;
+    color: var(--color-accent); /* Tech Blue */
 }
 
 @keyframes capToss {
@@ -1744,10 +2014,9 @@ h3:hover i.fa-graduation-cap {
 }
 
 /* 3. Career Journey: The "Climbing Launch" */
-/* Triggers when you hover over the H3 containing the arrow dots icon */
 h3:hover i.fa-arrow-up-right-dots {
     animation: arrowClimb 1s ease-in-out infinite;
-    color: #00aaff;
+    color: var(--color-accent);
 }
 
 @keyframes arrowClimb {
@@ -1757,16 +2026,38 @@ h3:hover i.fa-arrow-up-right-dots {
 }
 
 /* 4. Skills & Expertise: The "Tightening Wrench" */
-/* Targets your specific class: .skills-title */
 .skills-title:hover i.fa-tools {
     animation: wrenchTurn 0.8s ease-in-out infinite;
-    color: #00aaff;
+    color: var(--color-accent);
 }
 
 @keyframes wrenchTurn {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(-25deg); }
     75% { transform: rotate(25deg); }
+}
+
+/* 5. Certifications & Learning: The "Laptop Tilt" */
+h3:hover i.fa-laptop-code {
+    animation: laptopTilt 1.5s ease-in-out infinite;
+    color: var(--color-accent);
+}
+
+@keyframes laptopTilt {
+    0%, 100% { transform: rotateX(0deg) translateY(0); }
+    50% { transform: rotateX(20deg) translateY(-5px); }
+}
+
+/* 6. Rewards & Recognition: The "Medal Swing" */
+h3:hover i.fa-medal {
+    animation: medalSwing 1.2s ease-in-out infinite;
+    color: var(--color-accent);
+}
+
+@keyframes medalSwing {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-15deg) scale(1.1); }
+    75% { transform: rotate(15deg) scale(1.1); }
 }
 
 
@@ -2046,11 +2337,11 @@ h3:hover i.fa-arrow-up-right-dots {
     }
 
     .reward-card {
-        width: 92%; 
-        max-width: 380px;
+        width: 96%; 
+        max-width: 420px;
         margin: 0 auto;
-        padding: 1rem 1.2rem; 
-        gap: 0.6rem; 
+        padding: 1.25rem 1.5rem; 
+        gap: 0.7rem; 
     }
 
     .reward-slider {
@@ -2077,6 +2368,10 @@ h3:hover i.fa-arrow-up-right-dots {
     .reward-info p {
         font-size: 0.78rem; 
         line-height: 1.4;
+    }
+
+    .reward-info .award-name br {
+        display: none; /* Turns off the manual line breaks on mobile */
     }
 
 }

@@ -345,7 +345,7 @@ card.addEventListener('click', () => {
             const summary = summaryElement ? summaryElement.innerHTML : '';
 
             // --- THE FIX: Stop the random spinning ---
-            const modalContentBox = document.querySelector('.modal-content');
+            const modalContentBox = modalOverlay.querySelector('.modal-content');
             const columnHeader = card.closest('.timeline-column').querySelector('h3').textContent;
             
             // A. Turn OFF the animation temporarily
@@ -391,6 +391,90 @@ card.addEventListener('click', () => {
         }
     });
     // --- End of Modal Logic ---
+
+
+    // ==========================================
+
+
+    // ==========================================
+// PREMIUM REWARDS MODAL LOGIC (HTML-DRIVEN)
+// ==========================================
+
+let currentRewardImages = [];
+let currentRewardIndex = 0;
+
+// This function now receives the 'btn' element directly from the HTML
+window.openRewardModal = function(btn) {
+    // 1. Find the parent card to locate the images and title
+    const card = btn.closest('.reward-card');
+    const slider = card.querySelector('.reward-slider');
+    
+    // 2. Extract content directly from the HTML tags
+    const title = card.querySelector('h3').innerText;
+    const storyText = btn.getAttribute('data-story');
+    const imageList = slider.getAttribute('data-images').split(',');
+
+    // 3. Set the global variables for the slider
+    currentRewardImages = imageList;
+    currentRewardIndex = 0;
+
+    // 4. Populate the Modal with the extracted data
+    document.getElementById('reward-modal-title').innerText = title;
+    document.getElementById('reward-modal-story').innerHTML = `<p>${storyText}</p>`;
+
+    // 5. Display the first image
+    window.updateRewardImage();
+
+    // 6. Handle visibility of 'Next/Prev' buttons based on image count
+    const prevBtn = document.querySelector('.reward-modal-slider .prev');
+    const nextBtn = document.querySelector('.reward-modal-slider .next');
+    
+    if (currentRewardImages.length > 1) {
+        prevBtn.style.display = 'flex';
+        nextBtn.style.display = 'flex';
+    } else {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    }
+
+    // 7. Open the modal
+    document.getElementById('reward-modal').classList.add('active');
+};
+
+// Update the image displayed in the modal
+window.updateRewardImage = function() {
+    const imgElement = document.getElementById('reward-modal-img');
+    if (currentRewardImages.length > 0) {
+        imgElement.src = currentRewardImages[currentRewardIndex];
+        imgElement.style.display = 'block';
+    } else {
+        imgElement.style.display = 'none';
+    }
+};
+
+// Cycle through images (Forward/Backward)
+window.changeRewardImage = function(direction) {
+    currentRewardIndex += direction;
+    if (currentRewardIndex >= currentRewardImages.length) {
+        currentRewardIndex = 0;
+    } else if (currentRewardIndex < 0) {
+        currentRewardIndex = currentRewardImages.length - 1;
+    }
+    window.updateRewardImage();
+};
+
+// Close the modal
+window.closeRewardModal = function() {
+    document.getElementById('reward-modal').classList.remove('active');
+};
+
+// Close modal when clicking on the dark background overlay
+window.addEventListener('click', (e) => {
+    const rewardModal = document.getElementById('reward-modal');
+    if (e.target === rewardModal) {
+        window.closeRewardModal();
+    }
+});
 
 
 }); // <-- Final closing bracket
